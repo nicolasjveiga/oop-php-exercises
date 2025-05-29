@@ -1,57 +1,86 @@
 <?php
+class Produto {
+    private string $nome;
+    private float $preco;
+    private int $estoque;
 
-class Pessoa {
-    public $nome;
-    public $endereco;
-    public $email;
-    public $telefone;
-
-    function __construct($nome, $endereco, $email, $telefone)
-    {
+    public function __construct(string $nome, float $preco, int $estoque) {
         $this->nome = $nome;
-        $this->endereco = $endereco;
-        $this->email = $email;
-        $this->telefone = $telefone;
+        $this->preco = $preco;
+        $this->estoque = $estoque;
+    }
+
+    public function getNome(): string { return $this->nome; }
+    public function getPreco(): float { return $this->preco; }
+    public function getEstoque(): int { return $this->estoque; }
+
+    public function reduzirEstoque(int $quantidade): bool {
+        if ($this->estoque >= $quantidade) {
+            $this->estoque -= $quantidade;
+            return true;
+        }
+        return false;
     }
 }
+class ItemPedido {
+    private Produto $produto;
+    private int $quantidade;
 
-class Livro {
-    public $nome;
-    public $autor;
-    public $paginas;
-    public $disponivel;
-    public $cliente;
-
-    function __construct($nome, $autor, $paginas, $disponivel, $cliente)
-    {
-        $this->nome = $nome;
-        $this->autor = $autor;
-        $this->paginas = $paginas;
-        $this->disponivel = $disponivel;
-        $this->cliente = $cliente;
+    public function __construct(Produto $produto, int $quantidade) {
+        $this->produto = $produto;
+        $this->quantidade = $quantidade;
     }
 
-    function alugar($disponivel){
-        if($disponivel == true){
-            $disponivel = false;
-            echo "Livro alugado com sucesso\n";
-            return $disponivel;
+    public function getSubtotal(): float {
+        return $this->produto->getPreco() * $this->quantidade;
+    }
+
+    public function getProduto(): Produto {
+        return $this->produto;
+    }
+
+    public function getQuantidade(): int {
+        return $this->quantidade;
+    }
+}
+class Pedido {
+    private array $itens = [];
+    private string $formaPagamento;
+
+    public function __construct(string $formaPagamento) {
+        $this->formaPagamento = $formaPagamento;
+    }
+
+    public function adicionarItem(ItemPedido $item): void {
+        $produto = $item->getProduto();
+        if ($produto->reduzirEstoque($item->getQuantidade())) {
+            $this->itens[] = $item;
         } else {
-            echo "Livro não disponivel\n";
-            return $disponivel;
+            echo "Estoque insuficiente para o produto: {$produto->getNome()}\n";
         }
     }
 
-    function devolver($disponivel){
-        $disponivel = true;
-        echo "Livro devolvido com sucesso!\n";
-        return $disponivel;
+    public function calcularTotal(): float {
+        $total = 0;
+        foreach ($this->itens as $item) {
+            $total += $item->getSubtotal();
+        }
+        return $total;
     }
 
+    public function getFormaPagamento(): string {
+        return $this->formaPagamento;
+    }
 }
 
-$pessoa1 = new Pessoa("teste", "teste", "teste@email.com", 1234);
-$livro1 = new Livro("livro1", "autor1", 100, true, "");
-$livro2 = new Livro("livro2", "autor2", 100, false, "");
-//echo $livro1->alugar($livro1->disponivel);
-echo $livro2->devolver($livro2->disponivel);
+$p1 = new Produto("Arroz", 20.0, 10);
+$p2 = new Produto("Feijão", 8.5, 5);
+
+$pedido = new Pedido("cartao");
+
+
+$pedido->adicionarItem(new ItemPedido($p1, 2));
+$pedido->adicionarItem(new ItemPedido($p2, 3));
+
+echo "Total do pedido: R$ " . $pedido->calcularTotal() . "\n";
+echo "Forma de pagamento: " . $pedido->getFormaPagamento() . "\n";
