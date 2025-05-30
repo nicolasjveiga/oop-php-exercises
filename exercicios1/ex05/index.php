@@ -13,9 +13,9 @@ class Contador{
         return $this->i;
     }
 
-    public function incrementar()
+    public function incrementar($valor)
     {
-        $this->i++;
+        $this->i += $valor;
     }
 
     public function zerar()
@@ -26,7 +26,7 @@ class Contador{
 
 $contador = new Contador(10);
 $contador->getContagem();
-$contador->incrementar();
+$contador->incrementar(10);
 $contador->getContagem();
 $contador->zerar();
 $contador->getContagem();
