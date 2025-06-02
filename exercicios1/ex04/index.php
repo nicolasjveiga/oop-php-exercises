@@ -62,7 +62,7 @@ class Livro {
     }
 }
 
-$pessoa1 = new Pessoa("Ana", "Rua A", "ana@email.com", "99999-0000");
+$pessoa1 = new Pessoa("Ana", "Rua", "ana@email.com", "99999-0000");
 $pessoa2 = new Pessoa("Bruno", "Rua B", "bruno@email.com", "88888-0000");
 
 $livro1 = new Livro("Dom Casmurro", "Machado de Assis", 200);
